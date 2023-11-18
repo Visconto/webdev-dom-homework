@@ -1,8 +1,78 @@
 const listElement = document.getElementById("list");
-console.log(listElement);
 const btn = document.getElementById("btn");
 const inputName = document.getElementById("input-name");
 const inputComent = document.getElementById("input-coment");
+
+const comments = [
+  {
+    name: "Глеб Фокин",
+    data: "12.02.22 12:18",
+    comment: "Это будет первый комменетарий на этой странице",
+    isLike: 3,
+    isLower: false,
+  },
+  {
+    name: "Варвара",
+    data: "13.02.22 19:22",
+    comment: "Мне нравится как оформлена эта страница! ❤",
+    isLike: 75,
+    isLower: false,
+  },
+];
+
+const initLike = () => {
+  const likeButton = document.querySelectorAll(".like-button");
+  for (const likebuttons of likeButton) {
+    const index = likebuttons.dataset.index;
+    likebuttons.addEventListener("click", () => {
+      if (comments[index].isLower) {
+        comments[index].isLike -= 1;
+        comments[index].isLower = false;
+      } else {
+        comments[index].isLike += 1;
+        comments[index].isLower = true;
+      }
+
+      renderComments();
+    });
+  }
+  const time =
+    new Date().toLocaleDateString().slice(0, 6) +
+    new Date().toLocaleDateString().slice(8, 10) +
+    " " +
+    new Date().toLocaleTimeString().slice(0, -3);
+};
+
+// Рендер функция
+const renderComments = () => {
+  const commentsHTML = comments
+    .map((item, index) => {
+      return `<li class="comment">
+    <div class="comment-header">
+      <div>${item.name}</div>
+      <div>${item.data}
+      </div>
+    </div>
+    <div class="comment-body">
+      <div class="comment-text">
+        ${item.comment}
+      </div>    
+    </div>
+    <div class="comment-footer">
+      <div class="likes">
+        <span class="likes-counter">${item.isLike}</span>
+        <button class="like-button ${
+          item.isLower ? "-active-like" : ""
+        }"  data-index='${index}'></button>
+      </div>
+    </div>
+  </li>`;
+    })
+    .join("");
+  listElement.innerHTML = commentsHTML;
+  initLike();
+};
+renderComments();
 
 btn.addEventListener("click", () => {
   // валидация имени и комментарий
@@ -42,7 +112,19 @@ btn.addEventListener("click", () => {
 </div>
 </li>`;
 
-// Очистка полей ввода
+  if (inputNameElement.value === "" || inputCommentsElement.value === "") {
+    return;
+  }
+
+  comments.push({
+    name: inputCommentsElement.value,
+    data: time,
+    comment: inputCommentsElement.value,
+    isLike: 0,
+    isLower: false,
+  });
+  renderComments();
+  // Очистка полей ввода
   inputName.value = "";
   inputComent.value = "";
 });
